@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -85,7 +86,7 @@ class MyProvider with ChangeNotifier{
   }
 
   Future<void> createClient()async{
-    client = await Socket.connect(ipv4, 8080);
+    client = await Socket.connect('105.96.237.220', 8080);
     print('Connected to: ${client?.remoteAddress.address}:${client?.remotePort}');
     listenToRemoteServer();
     // remoteServer = IO.io('http://localhost:8080', <String, dynamic>{
