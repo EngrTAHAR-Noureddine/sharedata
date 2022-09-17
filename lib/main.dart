@@ -1,14 +1,10 @@
-import 'dart:io';
 
-import 'package:dart_ipify/dart_ipify.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sharedata/Home.dart';
 import 'package:sharedata/Login.dart';
 import 'package:sharedata/MyProvider.dart';
 
 void main() async{
-  MyProvider().ipv4 = await Ipify.ipv4();
 
   runApp(
       MultiProvider(

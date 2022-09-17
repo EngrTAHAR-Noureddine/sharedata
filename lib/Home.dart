@@ -78,7 +78,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
                 return Scaffold(
                   appBar: AppBar(
-                    title: Text("YOUR IP ADRESS : ${MyProvider().ipv4} "),
+                    title: Text("YOUR IP ADRESS : ${(MyProvider().asServer == true)?MyProvider().hexAddress.toUpperCase():MyProvider().address.toUpperCase()} "),
                     actions: [
                       _checkBox(context)
                     ],
