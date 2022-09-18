@@ -143,7 +143,7 @@ class MyProvider with ChangeNotifier {
 
     localServer = await UDP.bind(Endpoint.any(port: Port(numberPort)));
 
-    localAddress = localServer?.socket?.address.address ?? "localhost";
+    //localAddress = localServer?.socket?.address.address ?? "localhost";
 
 
     //Listen to the client anytime
@@ -158,7 +158,9 @@ class MyProvider with ChangeNotifier {
         case CONNECT_MESSAGE_CLIENT :
                     _connexionClients(message: message , addressIP: datagram.address.address);
                   break;
-        default : _getFromClient(message); break;
+        default :
+          _getFromClient(message);
+          break;
       }
 
 
@@ -204,25 +206,30 @@ class MyProvider with ChangeNotifier {
     var sender = await UDP.bind(Endpoint.any(port: Port(numberPort)));
     await sender.send(jsonEncode(requestServer.toJson()).codeUnits, Endpoint.broadcast(port: Port(numberPort)));
 
-    sender.asStream(timeout: const Duration(minutes: 1)).listen((datagram) {
+    sender.asStream().listen((datagram) {
       var statusStr = String.fromCharCodes(datagram!.data);
       print("looking for server has spoken : $statusStr ");
-      if(statusStr == RESPONSE_OK){
+      Message message = Message.fromJson(jsonDecode(statusStr));
+
+      if(message.message == RESPONSE_OK){
         remoteServerIP = datagram.address.address;
         status = ResponseType.DONE;
         notifyListeners();
-      }
-    })
-    .onDone(() {
-      if(remoteServerIP !=null){
-        status = ResponseType.DONE;
       }else{
         status = ResponseType.ERROR;
+        notifyListeners();
       }
-      notifyListeners();
     });
+    // .onDone(() {
+    //   if(remoteServerIP !=null){
+    //     status = ResponseType.DONE;
+    //   }else{
+    //     status = ResponseType.ERROR;
+    //   }
+    //   notifyListeners();
+    // });
 
-    sender.close();
+    //sender.close();
   }
 
   connectToRemoteServer()async{
