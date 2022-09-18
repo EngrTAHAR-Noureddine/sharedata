@@ -169,6 +169,7 @@ class MyProvider with ChangeNotifier {
 
 
       localServer?.send(jsonEncode(message.toJson()).codeUnits, Endpoint.unicast(datagram.address , port: Port(numberPort)));
+      notifyListeners();
 
     });
 
@@ -182,6 +183,8 @@ class MyProvider with ChangeNotifier {
       Message message = Message(id: "");
       message.message = textSenderController.text;
       message.id = (asServer == true)? "Server:$localAddress" : localAddress;
+
+      print("Send Data from ($localAddress}): ${jsonEncode(message.toJson())}");
 
       _sendTo(
           message: jsonEncode(message.toJson()),
@@ -241,9 +244,9 @@ class MyProvider with ChangeNotifier {
   }
 
   connectToRemoteServer()async{
-    print("send to server of adress : $remoteServerIP");
+    print("send to server of adress : ${InternetAddress(remoteServerIP!).address}");
 
-    localServer = await UDP.bind(Endpoint.unicast( InternetAddress(remoteServerIP!) ,port: Port(numberPort)));
+    localServer = await UDP.bind(Endpoint.any(port: Port(numberPort)));
     //localAddress = localServer?.socket?.address.address ?? "localhost";
 
     //Listen to the server anytime
@@ -253,8 +256,9 @@ class MyProvider with ChangeNotifier {
       Message message = Message.fromJson(jsonDecode(data));
       if(message.message != RESPONSE_OK){
         listWords.add(message);
-        notifyListeners();
+
       }
+      notifyListeners();
     });
   }
 
