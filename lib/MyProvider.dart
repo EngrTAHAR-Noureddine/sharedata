@@ -68,8 +68,9 @@ class MyProvider with ChangeNotifier {
       address = (await NetworkInfo().getWifiIP())!;
       List<String> splitter = address.split('.');
       for (var element in splitter) {
-        hexAddress = hexAddress + int.parse(element).toRadixString(16);
+        hexAddress = "$hexAddress${int.parse(element).toRadixString(16)}-";
       }
+      hexAddress = hexAddress.substring(0,hexAddress.length-1);
       print(" address is : ${address}");
     }catch(e){
       hexAddress = "Connection problems";
@@ -142,12 +143,12 @@ class MyProvider with ChangeNotifier {
   Future<void> createRemoteServer() async {
     await getInfoNetwork();
 
-    List<String> list = remoteServerIPHex.split('');
+    List<String> list = remoteServerIPHex.split('-');
 
-    remoteServerIPHex = "${int.parse(list[0],radix: 16)}${int.parse(list[1],radix: 16)}.";
-    remoteServerIPHex = "$remoteServerIPHex${int.parse(list[2],radix: 16)}${int.parse(list[3],radix: 16)}.";
-    remoteServerIPHex = "$remoteServerIPHex${int.parse(list[4],radix: 16)}${int.parse(list[5],radix: 16)}.";
-    remoteServerIPHex = "$remoteServerIPHex${int.parse(list[6],radix: 16)}${int.parse(list[7],radix: 16)}";
+    remoteServerIPHex = "${int.parse(list[0],radix: 16)}.";
+    remoteServerIPHex = "$remoteServerIPHex${int.parse(list[1],radix: 16)}.";
+    remoteServerIPHex = "$remoteServerIPHex${int.parse(list[2],radix: 16)}.";
+    remoteServerIPHex = "$remoteServerIPHex${int.parse(list[3],radix: 16)}";
 
     print("Remote server is : ${remoteServerIPHex.split('')}");
 
@@ -159,7 +160,7 @@ class MyProvider with ChangeNotifier {
   void listenToRemoteServer() {
     remoteServer?.listen(
       // handle data from the server
-          (Uint8List data) {
+     (Uint8List data) {
         final serverResponse = String.fromCharCodes(data);
         print('Server: $serverResponse');
         listWords.add(Message(
