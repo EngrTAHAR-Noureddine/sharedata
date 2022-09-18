@@ -199,7 +199,7 @@ class MyProvider with ChangeNotifier {
   void editingTextField(String val){
 
     //print("edit : ${iPAddressController.text}");
-    if(val.isNotEmpty && val.length == 8){
+    if(val.isNotEmpty && val.length == 11){
       isGettingAddressIP = true;
       print("Val : $val");
       remoteServerIPHex = val;
