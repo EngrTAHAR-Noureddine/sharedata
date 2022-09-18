@@ -55,7 +55,7 @@ class Home extends StatelessWidget {
                 itemCount: context.read<MyProvider>().listWords.length,
                  itemBuilder: (ctx, i) => ListTile(
                          leading: const Icon(Icons.person),
-                         title: Text("From :${context.read<MyProvider>().listWords[i].from}" ) ,
+                         title: Text("From :${context.read<MyProvider>().listWords[i].id}" ) ,
                          subtitle: Text("Message :${context.read<MyProvider>().listWords[i].message}" ) ,
                  )
              ),
@@ -76,19 +76,20 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Text("YOUR IP ADRESS : ${(MyProvider().asServer == true)?MyProvider().hexAddress.toUpperCase():MyProvider().address.toUpperCase()} "),
-                    actions: [
-                      _checkBox(context)
+
+    if(MyProvider().asServer == true) MyProvider().acknowledgement();
+
+    return Scaffold(
+        appBar: AppBar(
+           title: Text("YOUR ADDRESS : ${MyProvider().localAddress } "),
+           actions: [
+               _checkBox(context)
                     ],
                   ),
-                  body:  Row(
-                    children: [
-
-                      _writeText(context),
-                      _chatField(context)
-
+        body:  Row(
+            children: [
+                  _writeText(context),
+                  _chatField(context)
                     ],
                   ),
                 );
