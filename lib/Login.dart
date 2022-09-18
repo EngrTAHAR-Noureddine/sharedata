@@ -11,7 +11,7 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         height: double.infinity,
         width: double.infinity,
         child: Center(
@@ -19,15 +19,13 @@ class Login extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Expanded(
-                child: Container(
-                  child: MaterialButton(
-                      child: const Text("AS Doctor (Will Be a Server)"),
-                      onPressed: ()async{
-                        MyProvider().asServer = true;
-                        await MyProvider().createServer();
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
-                      }),
-                ),
+                child: MaterialButton(
+                    child: const Text("AS Doctor (Will Be a Server)"),
+                    onPressed: ()async{
+                      MyProvider().asServer = true;
+                      await MyProvider().createServer();
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
+                    }),
               ),
               Expanded(
                 child: Column(
