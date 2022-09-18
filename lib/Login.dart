@@ -22,7 +22,7 @@ class Login extends StatelessWidget {
      return null;
    }
    isValidConnectToServer(){
-     if(_nameAssistantController.text.isEmpty){
+     if(_nameToConnectController.text.isEmpty){
        return "Field is Empty";
      }
      return null;
@@ -37,7 +37,7 @@ class Login extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                validator: isValid() ,
+                validator: (value) => isValid() ,
                 controller: _nameAssistantController,
                 decoration: const InputDecoration(
                   labelText: "Name of Assistant"
@@ -110,11 +110,11 @@ class Login extends StatelessWidget {
    List<Widget> _asClient(BuildContext context){
      return [
        Form(
-           key: _formKey,
+           key: _formKeyToConnect,
            child: Column(
              children: [
                TextFormField(
-                 validator: isValidConnectToServer() ,
+                 validator:(value) =>  isValidConnectToServer() ,
                  controller: _nameToConnectController,
                  decoration: const InputDecoration(
                      labelText: "Name of Assistant"
