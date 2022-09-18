@@ -16,12 +16,13 @@ void main() async{
 
   // creates a new UDP instance and binds it to the local address and the port
   // 65002.
-  var receiver = await UDP.bind(Endpoint.loopback(port: const Port(65002)));
+  var receiver = await UDP.bind(Endpoint.any(port: const Port(65001)));
 
   // receiving\listening
   receiver.asStream(timeout: const Duration(seconds: 20)).listen((datagram) {
     var str = String.fromCharCodes(datagram!.data);
     print("string receiver : $str ");
+    receiver.send("hi bro again".codeUnits, Endpoint.unicast(datagram.address , port: const Port(65001)));
     stdout.write(str);
   });
 
