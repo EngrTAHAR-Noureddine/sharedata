@@ -84,6 +84,10 @@ class MyProvider with ChangeNotifier {
   //   }).onDone(() => print('Finish. Found $found device(s)'));
   // }
 
+  getAddressIP()async{
+    localAddress = (await NetworkInfo().getWifiIP())!;
+  }
+
   // getInfoNetwork()async{
   //   try {
   //     address = (await NetworkInfo().getWifiIP())!;
@@ -183,6 +187,8 @@ class MyProvider with ChangeNotifier {
           message: jsonEncode(message.toJson()),
           address: (asServer == true)? remoteClients[0].addressIP! : remoteServerIP!
             );
+      textSenderController.clear();
+      notifyListeners();
       }
 
   }
@@ -206,12 +212,12 @@ class MyProvider with ChangeNotifier {
     var sender = await UDP.bind(Endpoint.any(port: Port(numberPort)));
     await sender.send(jsonEncode(requestServer.toJson()).codeUnits, Endpoint.broadcast(port: Port(numberPort)));
 
-    sender.asStream().listen((datagram) {
+    sender.asStream(timeout: const Duration(minutes: 1)).listen((datagram) {
       var statusStr = String.fromCharCodes(datagram!.data);
       print("looking for server has spoken : $statusStr ");
       Message message = Message.fromJson(jsonDecode(statusStr));
 
-      if(message.message == RESPONSE_OK){
+      if(message.message == RESPONSE_MESSAGE_SERVER){
         remoteServerIP = datagram.address.address;
         status = ResponseType.DONE;
         notifyListeners();
@@ -219,22 +225,26 @@ class MyProvider with ChangeNotifier {
         status = ResponseType.ERROR;
         notifyListeners();
       }
+    })
+    .onDone(() {
+      if(remoteServerIP !=null){
+        status = ResponseType.DONE;
+      }else{
+        status = ResponseType.ERROR;
+      }
+
+      sender.close();
+      notifyListeners();
     });
-    // .onDone(() {
-    //   if(remoteServerIP !=null){
-    //     status = ResponseType.DONE;
-    //   }else{
-    //     status = ResponseType.ERROR;
-    //   }
-    //   notifyListeners();
-    // });
 
     //sender.close();
   }
 
   connectToRemoteServer()async{
+    print("send to server of adress : $remoteServerIP");
+
     localServer = await UDP.bind(Endpoint.unicast( InternetAddress(remoteServerIP!) ,port: Port(numberPort)));
-    localAddress = localServer?.socket?.address.address ?? "localhost";
+    //localAddress = localServer?.socket?.address.address ?? "localhost";
 
     //Listen to the server anytime
     localServer?.asStream().listen((datagram) {

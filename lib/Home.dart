@@ -77,7 +77,11 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    if(MyProvider().asServer == true) MyProvider().acknowledgement();
+    if(MyProvider().asServer == true) {
+      MyProvider().acknowledgement();
+    } else {
+      MyProvider().connectToRemoteServer();
+    }
 
     return Scaffold(
         appBar: AppBar(

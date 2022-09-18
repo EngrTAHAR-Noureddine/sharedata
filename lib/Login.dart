@@ -72,7 +72,7 @@ class Login extends StatelessWidget {
             child: const Text("AS Doctor (Will Be a Server)"),
             onPressed: ()async{
               MyProvider().asServer = true;
-              //await MyProvider().createServer();
+              await MyProvider().getAddressIP();
               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
             }),
       ),
@@ -132,7 +132,7 @@ class Login extends StatelessWidget {
          child: MaterialButton(
              onPressed:(context.watch<MyProvider>().status == ResponseType.DONE) ?  ()async{
                MyProvider().asServer = false;
-               //await MyProvider().createRemoteServer();
+               await MyProvider().getAddressIP();
                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
              } : null,
              child: const Text("As Assistant (will be a client)")),
