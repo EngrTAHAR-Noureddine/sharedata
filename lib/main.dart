@@ -11,7 +11,7 @@ void main() async{
 
   var sender = await UDP.bind(Endpoint.any(port: const Port(65000)));
   var dataLength = await sender.send("HI BRO".codeUnits, Endpoint.broadcast(port: const Port(65001)));
-
+  print("string sender : $dataLength bytes sent. ");
   stdout.write("$dataLength bytes sent.");
 
   // creates a new UDP instance and binds it to the local address and the port
@@ -21,6 +21,7 @@ void main() async{
   // receiving\listening
   receiver.asStream(timeout: const Duration(seconds: 20)).listen((datagram) {
     var str = String.fromCharCodes(datagram!.data);
+    print("string receiver : $str ");
     stdout.write(str);
   });
 
