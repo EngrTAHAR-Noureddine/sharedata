@@ -81,7 +81,7 @@ class Home extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-           title: Text("YOUR ADDRESS : ${MyProvider().localAddress } "),
+           title: Text("YOUR ADDRESS : ${context.watch<MyProvider>().localAddress } "),
            actions: [
                _checkBox(context)
                     ],
