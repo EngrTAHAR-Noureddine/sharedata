@@ -80,7 +80,7 @@ class Home extends StatelessWidget {
     if(MyProvider().asServer == true) {
       MyProvider().acknowledgement();
     } else {
-      MyProvider().connectToRemoteServer();
+      MyProvider().lookingForServer(name: MyProvider().id);
     }
 
     return Scaffold(

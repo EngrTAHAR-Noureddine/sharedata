@@ -137,7 +137,7 @@ class MyProvider with ChangeNotifier {
     for (var client in remoteClients) {
       if(message.id == client.name){
         message.message;
-        listWords.add(message);
+        listWords.add(Message(id: message.id , message: message.message));
         message.id = "Server:$localAddress";
         message.message = RESPONSE_OK;
       }
@@ -213,52 +213,46 @@ class MyProvider with ChangeNotifier {
     id = name;
     Message requestServer = Message(id: name, message: CONNECT_MESSAGE_CLIENT );
 
-    var sender = await UDP.bind(Endpoint.any(port: Port(numberPort)));
-    await sender.send(jsonEncode(requestServer.toJson()).codeUnits, Endpoint.broadcast(port: Port(numberPort)));
-
-    sender.asStream(timeout: const Duration(minutes: 1)).listen((datagram) {
-      var statusStr = String.fromCharCodes(datagram!.data);
-      print("looking for server has spoken : $statusStr ");
-      Message message = Message.fromJson(jsonDecode(statusStr));
-
-      if(message.message == RESPONSE_MESSAGE_SERVER){
-        remoteServerIP = datagram.address.address;
-        status = ResponseType.DONE;
-        notifyListeners();
-      }else{
-        status = ResponseType.ERROR;
-        notifyListeners();
-      }
-    })
-    .onDone(() {
-      if(remoteServerIP !=null){
-        status = ResponseType.DONE;
-      }else{
-        status = ResponseType.ERROR;
-      }
-
-      sender.close();
-      notifyListeners();
-    });
-
-    //sender.close();
+    localServer = await UDP.bind(Endpoint.any(port: Port(numberPort)));
+    await localServer?.send(jsonEncode(requestServer.toJson()).codeUnits, Endpoint.broadcast(port: Port(numberPort)));
+    await connectToRemoteServer();
   }
 
   connectToRemoteServer()async{
     print("send to server of adress : ${InternetAddress(remoteServerIP!).address}");
 
-    localServer = await UDP.bind(Endpoint.any(port: Port(numberPort)));
-    //localAddress = localServer?.socket?.address.address ?? "localhost";
-
     //Listen to the server anytime
     localServer?.asStream().listen((datagram) {
+
       String data = String.fromCharCodes(datagram!.data);
       print("Server hase Spoken : $data ");
       Message message = Message.fromJson(jsonDecode(data));
-      if(message.message != RESPONSE_OK && message.id == "Server:$remoteServerIP"){
-        listWords.add(message);
+
+      switch(message.message){
+
+        case RESPONSE_MESSAGE_SERVER:
+          remoteServerIP = datagram.address.address;
+          status = ResponseType.DONE;
+          break;
+
+        case RESPONSE_OK :
+          print("the message is OK");
+          break;
+
+        default :
+          if(remoteServerIP!=null){
+            if(message.id == "Server:$remoteServerIP") listWords.add(message);
+            status = ResponseType.DONE;
+          }
+          else {
+            status = ResponseType.ERROR;
+          }
+          break;
+
       }
+
       notifyListeners();
+
     });
   }
 
@@ -266,6 +260,10 @@ class MyProvider with ChangeNotifier {
   changeToLoading(){
     status = ResponseType.LOADING;
     notifyListeners();
+  }
+
+  closeServer(){
+     localServer?.close();
   }
 
 
