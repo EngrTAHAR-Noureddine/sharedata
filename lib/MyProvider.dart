@@ -55,6 +55,7 @@ class MyProvider with ChangeNotifier {
   List<Message> listWords = [];
   ResponseType status = ResponseType.INIT;
   String localAddress = "localhost";
+  String id="";
 
   // getAddress() async {
   //   for (var interface in await NetworkInterface.list()) {
@@ -182,7 +183,7 @@ class MyProvider with ChangeNotifier {
     if(textSenderController.text.isNotEmpty){
       Message message = Message(id: "");
       message.message = textSenderController.text;
-      message.id = (asServer == true)? "Server:$localAddress" : localAddress;
+      message.id = (asServer == true)? "Server:$localAddress" : id;
 
       print("Send Data from ($localAddress}): ${jsonEncode(message.toJson())}");
 
@@ -209,7 +210,7 @@ class MyProvider with ChangeNotifier {
 
 
   lookingForServer({required String name})async{
-
+    id = name;
     Message requestServer = Message(id: name, message: CONNECT_MESSAGE_CLIENT );
 
     var sender = await UDP.bind(Endpoint.any(port: Port(numberPort)));
@@ -254,9 +255,8 @@ class MyProvider with ChangeNotifier {
       String data = String.fromCharCodes(datagram!.data);
       print("Server hase Spoken : $data ");
       Message message = Message.fromJson(jsonDecode(data));
-      if(message.message != RESPONSE_OK){
+      if(message.message != RESPONSE_OK && message.id == "Server:$remoteServerIP"){
         listWords.add(message);
-
       }
       notifyListeners();
     });
