@@ -219,7 +219,7 @@ class MyProvider with ChangeNotifier {
   }
 
   connectToRemoteServer()async{
-    print("send to server of adress : ${InternetAddress(remoteServerIP!).address}");
+    //print("send to server of adress : ${InternetAddress(remoteServerIP!).address}");
 
     //Listen to the server anytime
     localServer?.asStream().listen((datagram) {

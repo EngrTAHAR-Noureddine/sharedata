@@ -77,11 +77,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    if(MyProvider().asServer == true) {
-      MyProvider().acknowledgement();
-    } else {
-      MyProvider().lookingForServer(name: MyProvider().id);
-    }
+
 
     return Scaffold(
         appBar: AppBar(

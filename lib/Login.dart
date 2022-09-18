@@ -73,6 +73,9 @@ class Login extends StatelessWidget {
             onPressed: ()async{
               MyProvider().asServer = true;
               await MyProvider().getAddressIP();
+
+              MyProvider().acknowledgement();
+
               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
             }),
       ),
@@ -133,7 +136,11 @@ class Login extends StatelessWidget {
              onPressed:(context.watch<MyProvider>().status == ResponseType.DONE) ?  ()async{
                MyProvider().asServer = false;
                await MyProvider().getAddressIP();
+
                MyProvider().closeServer();
+
+               MyProvider().lookingForServer(name: MyProvider().id);
+
                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
              } : null,
              child: const Text("As Assistant (will be a client)")),
