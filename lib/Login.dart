@@ -31,10 +31,11 @@ class Login extends StatelessWidget {
 
   List<Widget> _asServer(context){
     return [
-
+      const Text("DOCTOR"),
       Form(
           key: _formKey,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextFormField(
                 validator: (value) => isValid() ,
@@ -43,6 +44,12 @@ class Login extends StatelessWidget {
                   labelText: "Name of Assistant"
                 ),
               ),
+
+             const SizedBox(
+                width: 10,
+                height: 20,
+              ),
+
               Container(
                 color: Colors.orange,
                 padding: const EdgeInsets.all(10),
@@ -65,6 +72,8 @@ class Login extends StatelessWidget {
           )
       ),
 
+
+
       Container(
         color: Colors.blue,
         padding:const EdgeInsets.all(10),
@@ -74,7 +83,7 @@ class Login extends StatelessWidget {
               MyProvider().asServer = true;
               await MyProvider().getAddressIP();
 
-              MyProvider().acknowledgement();
+              MyProvider().listenToClients();
 
               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
             }),
@@ -83,7 +92,7 @@ class Login extends StatelessWidget {
   }
 
   Widget _fieldSubmit(BuildContext context){
-     switch(context.watch<MyProvider>().status){
+     switch(context.watch<MyProvider>().connexionStatus){
        case ResponseType.LOADING:
          return const CircularProgressIndicator();
        case ResponseType.ERROR:
@@ -112,6 +121,9 @@ class Login extends StatelessWidget {
 
    List<Widget> _asClient(BuildContext context){
      return [
+
+       const Text("Assistant"),
+
        Form(
            key: _formKeyToConnect,
            child: Column(
@@ -123,23 +135,26 @@ class Login extends StatelessWidget {
                      labelText: "Name of Assistant"
                  ),
                ),
-
+               const SizedBox(
+                 width: 10,
+                 height: 20,
+               ),
                Center(child: _fieldSubmit(context))
 
              ],
            )
        ),
        Container(
-         color: (context.watch<MyProvider>().status == ResponseType.DONE) ? Colors.blue: Colors.grey ,
+         color: (context.watch<MyProvider>().connexionStatus == ResponseType.DONE) ? Colors.blue: Colors.grey ,
          padding: const EdgeInsets.all(10),
          child: MaterialButton(
-             onPressed:(context.watch<MyProvider>().status == ResponseType.DONE) ?  ()async{
+             onPressed:(context.watch<MyProvider>().connexionStatus == ResponseType.DONE) ?  ()async{
                MyProvider().asServer = false;
                await MyProvider().getAddressIP();
 
-               MyProvider().closeServer();
+               MyProvider().closeClient();
 
-               MyProvider().lookingForServer(name: MyProvider().id);
+               MyProvider().lookingForServer(name: MyProvider().idClient);
 
                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home()));
              } : null,
@@ -162,8 +177,12 @@ class Login extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Expanded(
-                child: Column(
-                  children: _asServer(context),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: _asServer(context),
+                  ),
                 )
               ),
               Container(
@@ -172,9 +191,12 @@ class Login extends StatelessWidget {
                 color: Colors.red,
               ),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: _asClient(context)
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: _asClient(context)
+                  ),
                 ),
               ),
             ],
